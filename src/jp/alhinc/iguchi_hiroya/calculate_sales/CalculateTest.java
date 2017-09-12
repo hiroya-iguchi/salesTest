@@ -59,10 +59,6 @@ public class CalculateTest {
     			  branchNameMap.put(branchFile[0], branchFile[1]);
     			  branchSaleMap.put(branchFile[0], (long)0);
     		  }
-    		  System.out.println(branchNameMap);
-    		  System.out.println(branchSaleMap);
-
-
 
     	  }catch(IOException e){
     		  System.out.println("予期せぬエラーが発生しました");
@@ -111,9 +107,6 @@ public class CalculateTest {
     			  commoditySaleMap.put(commodityFile[0], (long)0);
 
     		  }
-    		  System.out.println(commodityNameMap);
-    		  System.out.println(commoditySaleMap);
-
 
     	  }catch(IOException e1){
     		  System.out.println("予期せぬエラーが発生しました");
@@ -142,19 +135,30 @@ public class CalculateTest {
   					return false;
   				}
   			}
-  		};
+  		  };
 
   		//"rcd"が含まれるフィルタを作成する
   		File[] files = new File(args[0]).listFiles(filter);//rcdを持つものだけをファイル型の配列filesに格納する。
-  		//結果を出力する
+
+  		//連番処理
+
+  		String fileName;
+  		ArrayList<String> fileNames = new ArrayList<String>();//String型のArrayListを作成
+  		//filesの個数分くりかえし
+  		for(int i=0; i< files.length; i++){//配列filesの要素数より小さい場合の処理↓
+  		    fileName = files[i].getName();//File型からString型への変換
+  		    //桁数が12、かつ数字で始まりdで終わる場合を検討する
+  			if(fileName.length()==12 && fileName.matches("^[0-9].*d$") && files[i].isFile()){
+  			fileNames.add(fileName);//アレイリストへの追加
+  			}
+  		 }
 
   		ArrayList<Integer> sequenceNumber = new ArrayList<Integer>();
 
   		String nameSeq;
   		for(int i=0; i<files.length; ++i){
-  			System.out.println(files[i]);//配列の要素数より小さい場合は出力（チェック）
+
   			nameSeq = files[i].getName();//ファイル型配列の１つめの要素をString型へ。
-  			System.out.println(nameSeq);//ここまでOKかチェック
 
   			String[] nameSeqs = nameSeq.split("\\.");//String型配列に8桁番号と拡張子を分割して格納
 
@@ -167,22 +171,9 @@ public class CalculateTest {
   			    }
 
   			}
-  			    if(!files[i].isFile()){//ファイルかディレクトリかの判別
-  				System.out.println("ディレクトリが含まれています");
-  				return;
-  			    }
 
-  		}String fileName;
-  		ArrayList<String> fileNames = new ArrayList<String>();//String型のArrayListを作成
-  		//filesの個数分くりかえし
-  		for(int i=0; i< files.length; i++){//配列filesの要素数より小さい場合の処理↓
-  		    fileName = files[i].getName();//File型からString型への変換
-  		    //桁数が12、かつ数字で始まりdで終わる場合を検討する
-  			if(fileName.length()==12 && fileName.matches("^[0-9].*d$")){
-  			fileNames.add(fileName);//アレイリストへの追加
-  			}
-  		 }
-  		System.out.println(fileNames);
+  		}
+
   		//3-2　売り上げファイルの読み込みと合算
   		BufferedReader br2 = null;
   		try{
@@ -239,13 +230,10 @@ public class CalculateTest {
       			 if(commoditySum.length() > 10){
       				System.out.println("合計金額が10桁を超えました");
       				return;
-      			}
-
-      			commoditySaleMap.put(saleFiles.get(1), x);
+      			 }
+      			 commoditySaleMap.put(saleFiles.get(1), x);
       		  }
-
-  		  }System.out.println(branchSaleMap);
-  		   System.out.println(commoditySaleMap);
+    	   }
   		  }catch(IOException e2){
 
     		 System.out.println("予期せぬエラーが発生しました");
@@ -263,9 +251,9 @@ public class CalculateTest {
             	  }
           }
   		//ファイルへの出力
+  		//合計金額を降順にする
   		BufferedWriter bw = null;
   		try{
-  			//合計金額を降順にする
   			List<Map.Entry<String,Long>> entries =
   	              new ArrayList<Map.Entry<String,Long>>(branchSaleMap.entrySet());
   	        Collections.sort(entries, new Comparator<Map.Entry<String,Long>>() {
@@ -277,7 +265,7 @@ public class CalculateTest {
   	            }
   	        });
 
-  	          File file = new File(args[0] + "\\branch.out");
+  	          File file = new File(args[0] + File.separator + "branch.out");
     			FileWriter fw = new FileWriter(file);
     			bw = new BufferedWriter(fw);
 
@@ -285,18 +273,13 @@ public class CalculateTest {
     			for (Entry<String,Long> s : entries) {//branchファイルへの出力
     	            bw.write(s.getKey()+","+branchNameMap.get(s.getKey())+","+s.getValue());
     	            bw.newLine();
-                    System.out.println(s.getKey()+","+branchNameMap.get(s.getKey())+","+s.getValue()
-);
     	        }
 
   		}catch(IOException e2){
 
     		  System.out.println("予期せぬエラーが発生しました");
     		  return;
-
-
-    	      }
-  		finally{
+    	 }finally{
 
             if (bw != null)
                 try {
@@ -304,12 +287,12 @@ public class CalculateTest {
                 }catch(IOException e){
           		  System.out.println("予期せぬエラーが発生しました");
           		  return;
-          	  }
-        }
+          	     }
+          }
 
-  		BufferedWriter bw1 = null;
+  	    //商品金額を降順にする
+  		    BufferedWriter bw1 = null;
   		try{
-  	//商品金額を降順にする
 			List<Map.Entry<String,Long>> entries1 =
 	              new ArrayList<Map.Entry<String,Long>>(commoditySaleMap.entrySet());
 	        Collections.sort(entries1, new Comparator<Map.Entry<String,Long>>() {
@@ -320,22 +303,17 @@ public class CalculateTest {
 	                return ((Long)entry2.getValue()).compareTo((Long)entry1.getValue());
 	            }
 	        });
-	        File file1 = new File(args[0] + "\\commodity.out");
+	        File file1 = new File(args[0] + File.separator + "commodity.out");
  			FileWriter fw1 = new FileWriter(file1);
  			bw1 = new BufferedWriter(fw1);
 
  			for (Entry<String,Long> s : entries1){//commodityファイルへの出力
 	        	bw1.write(s.getKey()+","+commodityNameMap.get(s.getKey())+","+s.getValue());
 	        	bw1.newLine();
-	        	System.out.println(s.getKey()+","+commodityNameMap.get(s.getKey())+","+s.getValue());
 	        }
-
-  		}
-  		catch(IOException e3){
+  		}catch(IOException e3){
   			System.out.println("予期せぬエラーが発生しました");
   		  return;
-
-
 	      }finally{
 
 	            if (bw1 != null)
@@ -346,7 +324,6 @@ public class CalculateTest {
 	          		  return;
 	          	  }
 	        }
-
 
       }//←mainメソッドの終点
       }

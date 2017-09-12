@@ -158,7 +158,7 @@ public class CalculateTest {
   		String nameSeq;
   		for(int i=0; i<files.length; ++i){
 
-  			nameSeq = files[i].getName();//ファイル型配列の１つめの要素をString型へ。
+  			nameSeq = fileNames.get(i);//ファイル型配列の１つめの要素をString型へ。
 
   			String[] nameSeqs = nameSeq.split("\\.");//String型配列に8桁番号と拡張子を分割して格納
 
@@ -180,32 +180,36 @@ public class CalculateTest {
 
   		  //売り上げファイルの読み込み
   		  for(int i = 0; i< fileNames.size(); i++){ //ArrayListの要素数より少ない場合=要素すべてに対して以下を実行
-  			ArrayList<String> saleFiles = new ArrayList<String>();//String型のアレイリストを作成
+
+  			  ArrayList<String> saleFiles = new ArrayList<String>();//String型のアレイリストを作成
   			  //指定ディレクトリからファイルを開く
     		  File file3 = new File(args[0]+ File.separator + fileNames.get(i));
-    		//1行ずつデータを読み込む
       		  FileReader fr3 = new FileReader(file3);
       		  br2 = new BufferedReader(fr3);
       		  String s3 ;//1行目が読み込まれる
 
 
-      		  //↓支店コードと合計金額の処理
+      		  //支店コードと合計金額の処理
       		  while((s3 = br2.readLine())!= null){//行の中身がある限り下を繰り返す
       			  saleFiles.add(s3);//ArrayListに要素を追加する
 
 
 
-      		  }if(saleFiles.size() != 3){//売上ファイルの行数が3行以外かの判別
+      		  }if(saleFiles.size() != 3){//売上ファイルの行数が3行以外の判別
   				  System.out.println(fileNames.get(i)+"のフォーマットが不正です");
   				  return;
   			  }else if(branchSaleMap.get(saleFiles.get(0)) == null){//支店コードに対応する売上がない場合
     				System.out.println(fileNames.get(i)+"の支店コードが不正です");
 
-    			}if(commoditySaleMap.get(saleFiles.get(1)) == null){
+    			} else if(commoditySaleMap.get(saleFiles.get(1)) == null){//商品コードに対する売上がない場合
       				System.out.println(fileNames.get(i)+"の商品コードが不正です");
 
-    			}
+    			} else if(!saleFiles.get(2).matches("^[0-9]*$") ){//金額に数値以外が混ざっていればエラー検出
+    				  System.out.println("予期せぬエラーが発生しました");
+    				  return;
+    			  }
       		  else if(branchSaleMap.get(saleFiles.get(0)) != null ){//取り出した要素をmapに入れてみてvalueが存在するか
+
 
       			long y = new Long(saleFiles.get(2)).longValue();//String型金額を数値に変換
       			long z = new Long(branchSaleMap.get(saleFiles.get(0))).longValue();//map1aのvalueを数値に変換
@@ -215,10 +219,12 @@ public class CalculateTest {
       		   if(branchSum.length() > 10){
       				System.out.println("合計金額が10桁を超えました");
       				return;
-      			}
+      		        }
+      		    branchSaleMap.put(saleFiles.get(0), t);
 
 
-      			branchSaleMap.put(saleFiles.get(0), t);
+
+
 
       		  //商品コードと合計金額の処理
       			long v = new Long(saleFiles.get(2)).longValue();//String型金額を数値に変換
@@ -231,9 +237,10 @@ public class CalculateTest {
       				System.out.println("合計金額が10桁を超えました");
       				return;
       			 }
-      			 commoditySaleMap.put(saleFiles.get(1), x);
+      			commoditySaleMap.put(saleFiles.get(1), x);
       		  }
-    	   }
+  		     }
+
   		  }catch(IOException e2){
 
     		 System.out.println("予期せぬエラーが発生しました");

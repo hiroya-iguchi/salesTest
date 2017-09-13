@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 public class CalculateTest {
 
 //降順・出力メソッド
-	  public static void sortOutput(Map<String,Long> map , String args , String outName, HashMap<String,String> nameMap){
+	  public static boolean sortOutput(Map<String,Long> map , String args , String outName, HashMap<String,String> nameMap){
 		  BufferedWriter bw = null;
 	  		try{
 		  List<Map.Entry<String,Long>> entries =
@@ -42,7 +42,7 @@ public class CalculateTest {
 	        }
 	  		}catch(IOException e3){
 	  			System.out.println("予期せぬエラーが発生しました");
-	    		  return;
+	    		  return false;
 	  	      }finally{
 
 	  	            if (bw != null){
@@ -50,15 +50,15 @@ public class CalculateTest {
 	  	                    bw.close();
 	  	                }catch(IOException e){
 	  	          		  System.out.println("予期せぬエラーが発生しました");
-	  	          		  return;
+	  	          		  return false;
 	  	          	    }
 	  	            }
 
-	          }
+	          }return true;
 	  }
 
 	  //定義ファイル読み込みメソッド
-	  public static void fileRead(String args , String lstName ,String match, int x,
+	  public static boolean fileRead(String args , String lstName ,String match, int x,
 			  String exist,HashMap<String,String> hashMap, Map<String,Long> map){
 
 
@@ -71,7 +71,7 @@ public class CalculateTest {
     		  //支店定義ファイルの存在判別
     		  if(!file.exists()){
     			  System.out.println(exist + "が存在しません");
-    			  return;
+    			  return false;
     		  }
     		  //1行ずつデータを読み込む
     		  FileReader fr = new FileReader(file);
@@ -87,7 +87,7 @@ public class CalculateTest {
     			  if(!File[0].matches(match)||File[0].length() != x || File.length != 2){
     				  System.out.println(exist + "のフォーマットが不正です");
 
-    				  return;
+    				  return false;
     			  }
     			  hashMap.put(File[0], File[1]);
     			  map.put(File[0], (long)0);
@@ -95,7 +95,7 @@ public class CalculateTest {
 
     	  }catch(IOException e){
     		  System.out.println("予期せぬエラーが発生しました");
-    		  return;
+    		  return false;
     	  }finally{
 
               if (br != null)
@@ -103,9 +103,9 @@ public class CalculateTest {
                       br.close();
                   }catch(IOException e){
             		  System.out.println("予期せぬエラーが発生しました");
-            		  return;
+            		  return false;
             	  }
-          }
+          }return true;
 
 	  }
 
@@ -126,11 +126,17 @@ public class CalculateTest {
 
  		  //1.支店定義ファイル読み込み
  		fileRead(args[0] , "branch.lst" ,"^[0-9]*$", 3,"支店定義ファイル",branchNameMap, branchSaleMap);
-
+           if(fileRead(args[0] , "branch.lst" ,"^[0-9]*$", 3,"支店定義ファイル",branchNameMap, branchSaleMap)
+        		   == false){
+        	   return;
+           }
 
     	  //2.商品定義ファイル読み込み
         fileRead(args[0] , "commodity.lst" ,"^[0-9a-zA-Z]*$", 8,"商品定義ファイル",commodityNameMap, commoditySaleMap);
-
+           if(fileRead(args[0] , "commodity.lst" ,"^[0-9a-zA-Z]*$", 8,"商品定義ファイル",
+        		   commodityNameMap, commoditySaleMap) == false){
+     	       return;
+           }
     	  //3.集計
 
           //3-1 連番ファイルの検索
@@ -271,11 +277,18 @@ public class CalculateTest {
   		//合計金額を降順にする
 
   		sortOutput(branchSaleMap , args[0] , "branch.out", branchNameMap);
+  		if(sortOutput(branchSaleMap , args[0] , "branch.out", branchNameMap) == false){
+  			return;
+  		}
 
 
   	    //商品金額を降順にする
 
   		sortOutput(commoditySaleMap , args[0] , "commodity.out", commodityNameMap);
+  		if(sortOutput(commoditySaleMap , args[0] , "commodity.out", commodityNameMap) == false){
+  			return;
+  		}
+
 
 
       }//←mainメソッドの終点

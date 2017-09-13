@@ -257,13 +257,11 @@ public class CalculateTest {
 
 		// ファイルへの出力
 		// 合計金額を降順にする
-		sortOutput(branchSaleMap, args[0], "branch.out", branchNameMap);
 		if (sortOutput(branchSaleMap, args[0], "branch.out", branchNameMap) == false) {
 			return;
 		}
 
 		// 商品金額を降順にする
-		sortOutput(commoditySaleMap, args[0], "commodity.out", commodityNameMap);
 		if (sortOutput(commoditySaleMap, args[0], "commodity.out", commodityNameMap) == false) {
 			return;
 		}

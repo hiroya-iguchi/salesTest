@@ -191,6 +191,7 @@ public class CalculateSales {
 
 				ArrayList<String> saleFiles = new ArrayList<String>();// String型のアレイリストを作成
 				// 指定ディレクトリからファイルを開く
+				//Stringで持ってしまっているのでディレクトリから読み込んでFile型に変換する
 				File file3 = new File(args[0] + File.separator + fileNames.get(i));
 				FileReader fr3 = new FileReader(file3);
 				br2 = new BufferedReader(fr3);
